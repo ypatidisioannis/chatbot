@@ -25,7 +25,7 @@ async def chat(request: Request):
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
-            {"role": "system", "content": "You are a helpful assistant for a business website."},
+            {"role": "system", "content": "You are an AI assistant for a company that builds custom chatbots and voicebots for businesses. You help website visitors understand how they can use AI to automate support, sales, or general inquiries. Explain clearly, professionally, and in simple terms. If the visitor seems interested, ask if they want a free demo or to speak with a human. Avoid overly technical jargon. Always remain helpful and polite."}
             {"role": "user", "content": user_message}
         ]
     )
