@@ -29,6 +29,18 @@ async def chat(request: Request):
         {"role": "user", "content": user_message}
     ]
     )
+@app.post("/chat")
+async def chat(request: Request):
+    data = await request.json()
+    messages = data.get("messages")  # now getting the full array
 
-    return {"response": response.choices[0].message.content}
+    client = openai.OpenAI()
+    chat_response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=messages
+    )
+
+    return {"response": chat_response.choices[0].message.content}
+
+
 
