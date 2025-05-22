@@ -23,7 +23,9 @@ async def chat(request: Request):
     client = openai.OpenAI()
     chat_response = client.chat.completions.create(
         model="gpt-3.5-turbo",
-        messages=messages
+        messages=messages,
+        max_tokens=150,
+        temperature=0.6,
     )
 
     return {"response": chat_response.choices[0].message.content}
