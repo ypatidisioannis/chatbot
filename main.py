@@ -86,7 +86,7 @@ async def chat(request: Request):
     # 1) Let the model try to extract a lead via function call
     client = openai.OpenAI()
     response = client.chat.completions.create(
-        model="gpt-3.5-turbo-0613",
+        model="gpt-3.5-turbo",
         messages=messages,
         functions=[lead_extractor_fn],
         function_call="auto"
@@ -112,7 +112,7 @@ async def chat(request: Request):
 
         # 3) Ask the model to acknowledge receipt
         followup = client.chat.completions.create(
-            model="gpt-3.5-turbo-0613",
+            model="gpt-3.5-turbo",
             messages=messages
         )
         return {"response": followup.choices[0].message.content}
