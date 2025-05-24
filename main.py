@@ -4,6 +4,8 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from email.message import EmailMessage
 import openai
+import ssl
+
 
 # ── CONFIG ────────────────────────────────────────────────────────────────
 openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -39,7 +41,9 @@ def save_lead_db(name, email, phone):
 init_db()
 
 # ── EMAIL HELPER (your existing code) ────────────────────────────────────
-def email_lead_simple(name, email, phone):
+
+
+def email_lead_simple(name: str, email: str, phone: str):
     msg = EmailMessage()
     msg["Subject"] = f"New Lead: {name}"
     msg["From"]    = SMTP_USER
@@ -51,9 +55,16 @@ def email_lead_simple(name, email, phone):
         f"Phone: {phone}\n"
         f"Captured at: {datetime.utcnow().isoformat()}\n"
     )
-    with smtplib.SMTP_SSL(SMTP_HOST, SMTP_PORT) as smtp:
+
+    context = ssl.create_default_context()
+    print(f"📧 Connecting to {SMTP_HOST}:{SMTP_PORT} with STARTTLS")
+    with smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=15) as smtp:
+        smtp.ehlo()
+        smtp.starttls(context=context)
+        smtp.ehlo()
         smtp.login(SMTP_USER, SMTP_PASS)
         smtp.send_message(msg)
+        print(f"✅ Lead email sent for {name}")
 
 # ── FASTAPI SETUP ─────────────────────────────────────────────────────────
 app = FastAPI()
