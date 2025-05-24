@@ -64,10 +64,23 @@ def email_lead_simple(name: str, email: str, phone: str):
         f"Phone: {phone}\n"
         f"Captured at: {datetime.utcnow().isoformat()}\n"
     )
-    with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as smtp:
-        smtp.starttls()
-        smtp.login(SMTP_USER, SMTP_PASS)
-        smtp.send_message(msg)
+
+    try:
+        print(f"📧 Connecting to SMTP {SMTP_HOST}:{SMTP_PORT} as {SMTP_USER}")
+        with smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=15) as smtp:
+            smtp.starttls()
+            print("🔐 Starting TLS")
+            smtp.login(SMTP_USER, SMTP_PASS)
+            print("✅ Logged in successfully")
+            smtp.send_message(msg)
+            print(f"✅ Lead email sent for {name} to {LEAD_RECEIVER}")
+    except Exception as e:
+        # Log the full stack trace and re-raise so Render surfaces it in the logs
+        import traceback
+        traceback.print_exc()
+        print(f"❌ Failed to send lead email for {name}: {e}")
+        raise
+
 
 # ── FASTAPI SETUP ─────────────────────────────────────────────────────────
 app = FastAPI()
